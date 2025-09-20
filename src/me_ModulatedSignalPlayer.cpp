@@ -2,13 +2,13 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-09-15
+  Last mod.: 2025-09-20
 */
 
 #include <me_ModulatedSignalPlayer.h>
 
 #include <me_BaseTypes.h>
-#include <me_Timestamp.h>
+#include <me_Duration.h>
 
 #include <me_FrequencyGenerator.h>
 #include <me_Delays.h>
@@ -28,13 +28,13 @@ TBool me_ModulatedSignalPlayer::SetFrequency_Hz(
   This code is tuned to compensate overhead of function calls.
 */
 void me_ModulatedSignalPlayer::Emit(
-  me_Timestamp::TTimestamp Duration
+  me_Duration::TDuration Duration
 )
 {
-  const me_Timestamp::TTimestamp EmitOverhead = { 0, 0, 0, 103 };
+  const me_Duration::TDuration EmitOverhead = { 0, 0, 0, 103 };
 
-  if (!me_Timestamp::Subtract(&Duration, EmitOverhead))
-    Duration = me_Timestamp::Zero;
+  if (!me_Duration::Subtract(&Duration, EmitOverhead))
+    Duration = me_Duration::Zero;
 
   me_FrequencyGenerator::StartFreqGen();
   me_Delays::Delay_Duration(Duration);

@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-09-19
+  Last mod.: 2025-09-20
 */
 
 #include <me_ModulatedSignalPlayer.h>
@@ -10,11 +10,12 @@
 #include <me_BaseTypes.h>
 #include <me_Console.h>
 #include <me_DebugPrints.h>
+#include <me_Duration.h>
 
 void RunTest()
 {
   const TUint_4 EmitFreq_Hz = 25000;
-  const me_Timestamp::TTimestamp Duration = { 0, 0, 0, 500 };
+  const me_Duration::TDuration Duration = { 0, 0, 0, 500 };
 
   Console.Print("--");
   Console.Print("Test of emitting PWM for some time");
