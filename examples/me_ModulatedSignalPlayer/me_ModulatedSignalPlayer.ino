@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-09-20
+  Last mod.: 2025-10-24
 */
 
 #include <me_ModulatedSignalPlayer.h>
@@ -31,6 +31,7 @@ void RunTest()
 
   if (!me_ModulatedSignalPlayer::SetFrequency_Hz(EmitFreq_Hz))
     Console.Print("Setting frequency failed");
+
   me_ModulatedSignalPlayer::Emit(Duration);
 
   Console.Print(")");
