@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-10-24
+  Last mod.: 2025-10-26
 */
 
 #include <me_ModulatedSignalPlayer.h>
@@ -14,8 +14,8 @@
 
 void RunTest()
 {
-  const TUint_4 EmitFreq_Hz = 25000;
-  const me_Duration::TDuration Duration = { 0, 0, 20, 0 };
+  const TUint_4 EmitFreq_Hz = 80000;
+  const me_Duration::TDuration Duration = { 0, 0, 0, 400 };
 
   Console.Print("--");
   Console.Print("Test of emitting PWM for some time");

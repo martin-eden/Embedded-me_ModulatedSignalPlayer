@@ -36,7 +36,7 @@ void me_ModulatedSignalPlayer::Emit(
   me_Duration::TDuration Duration
 )
 {
-  const me_Duration::TDuration EmitOverhead = { 0, 0, 1, 410 };
+  const me_Duration::TDuration EmitOverhead = { 0, 0, 0, 110 };
 
   if (!me_Duration::Subtract(&Duration, EmitOverhead))
     Duration = me_Duration::Zero;
