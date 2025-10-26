@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-09-20
+  Last mod.: 2025-10-26
 */
 
 #pragma once
@@ -12,6 +12,7 @@
 
 namespace me_ModulatedSignalPlayer
 {
+  void Init();
   TBool SetFrequency_Hz(TUint_4 EmitFreq_Hz);
   void Emit(me_Duration::TDuration Duration);
 }

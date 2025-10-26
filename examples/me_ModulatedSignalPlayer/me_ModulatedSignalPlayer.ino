@@ -15,7 +15,7 @@
 void RunTest()
 {
   const TUint_4 EmitFreq_Hz = 25000;
-  const me_Duration::TDuration Duration = { 0, 0, 0, 500 };
+  const me_Duration::TDuration Duration = { 0, 0, 20, 0 };
 
   Console.Print("--");
   Console.Print("Test of emitting PWM for some time");
@@ -40,6 +40,7 @@ void RunTest()
 void setup()
 {
   Console.Init();
+  me_ModulatedSignalPlayer::Init();
 
   Console.Print("( [me_ModulatedSignalPlayer] test");
   Console.Indent();

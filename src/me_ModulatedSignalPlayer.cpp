@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-09-20
+  Last mod.: 2025-10-26
 */
 
 #include <me_ModulatedSignalPlayer.h>
@@ -14,6 +14,11 @@
 #include <me_Delays.h>
 
 using namespace me_ModulatedSignalPlayer;
+
+void me_ModulatedSignalPlayer::Init()
+{
+  me_Delays::Init();
+}
 
 TBool me_ModulatedSignalPlayer::SetFrequency_Hz(
   TUint_4 EmitFreq_Hz
@@ -31,7 +36,7 @@ void me_ModulatedSignalPlayer::Emit(
   me_Duration::TDuration Duration
 )
 {
-  const me_Duration::TDuration EmitOverhead = { 0, 0, 0, 103 };
+  const me_Duration::TDuration EmitOverhead = { 0, 0, 1, 410 };
 
   if (!me_Duration::Subtract(&Duration, EmitOverhead))
     Duration = me_Duration::Zero;
