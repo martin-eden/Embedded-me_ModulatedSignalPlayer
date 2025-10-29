@@ -60,6 +60,7 @@ static TUint_4 DurationToMicros(
     (TUint_4) Duration.MicroS;
 }
 
+/*
 static me_Duration::TDuration MicrosToDuration(
   TUint_4 NumMicros
 )
@@ -73,6 +74,7 @@ static me_Duration::TDuration MicrosToDuration(
 
   return Result;
 }
+*/
 
 /*
   Emit frequency for given duration

@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-10-28
+  Last mod.: 2025-10-29
 */
 
 #include <me_ModulatedSignalPlayer.h>
@@ -14,7 +14,7 @@
 #include <me_Menu.h>
 
 static TUint_4 EmitFreq_Hz = 50000;
-static me_Duration::TDuration EmitDuration = { 0, 0, 0, 600 };
+static me_Duration::TDuration EmitDuration = { 0, 0, 0, 300 };
 
 void SetFrequency_Handler(
   TAddress Data [[gnu::unused]],
