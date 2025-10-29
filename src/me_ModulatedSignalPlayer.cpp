@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-10-27
+  Last mod.: 2025-10-28
 */
 
 #include <me_ModulatedSignalPlayer.h>
@@ -34,6 +34,29 @@ TBool me_ModulatedSignalPlayer::SetFrequency_Hz(
   return me_FrequencyGenerator::SetFrequency_Hz(EmitFreq_Hz);
 }
 
+[[gnu::noinline]] static void StopEmittingAfter_Us(
+  TUint_2 NumMicros
+)
+{
+  const TUint_2 Overhead_Us = 44;
+
+  if (NumMicros > Overhead_Us)
+    NumMicros = NumMicros - Overhead_Us;
+  else
+    NumMicros = 0;
+
+  me_Delays::Delay_Us(NumMicros);
+
+  me_FrequencyGenerator::StopFreqGen();
+}
+
+static TUint_4 DurationToMicros(
+  me_Duration::TDuration Duration
+)
+{
+  return 1000000 * Duration.S + 1000 * Duration.MilliS + Duration.MicroS;
+}
+
 /*
   Emit frequency for given duration
 
@@ -43,76 +66,85 @@ void me_ModulatedSignalPlayer::Emit(
   me_Duration::TDuration Duration
 )
 {
-  const me_Duration::TDuration LastSnatch = { 0, 0, 0, 280 };
-  const TUint_2 LastSnatchOverhead_Us = 26;
+  const TUint_4 TimeReserve_Us = 800;
+  const TUint_2 MainDelayStep_Us = 100;
+  const TUint_4 FinalCorrection_Us = 2;
 
-  me_Duration::TDuration StartTime;
-  me_Duration::TDuration CurTime;
-  me_Duration::TDuration EndTime;
-  me_Duration::TDuration TimeRemained;
-  TUint_2 LastSnatch_Us;
+  TUint_4 Duration_Us;
+  TUint_4 CurTime_Us;
+  TUint_4 EndTime_Us;
+  TUint_4 TimeRemained_Us;
 
-  TUint_1 OrigSreg;
+  TUint_1 OrigSreg = SREG;
 
-  StartTime = me_RunTime::GetTime_Precise();
+  Duration_Us = DurationToMicros(Duration);
 
-  EndTime = StartTime;
-  if (!me_Duration::Add(&EndTime, Duration))
-    return;
+  cli();
 
-  if (!me_Duration::Subtract(&Duration, LastSnatch))
-    Duration = me_Duration::Zero;
+  CurTime_Us = DurationToMicros(me_RunTime::GetTime_Precise());
 
   me_FrequencyGenerator::StartFreqGen();
 
-  me_Delays::Delay_Duration(Duration);
+  EndTime_Us = CurTime_Us + Duration_Us;
 
-  OrigSreg = SREG;
-  cli();
+  if (Duration_Us > TimeReserve_Us)
+  {
+    SREG = OrigSreg;
 
-  CurTime = me_RunTime::GetTime_Precise();
+    while (true)
+    {
+      CurTime_Us = DurationToMicros(me_RunTime::GetTime_Precise());
 
-  TimeRemained = EndTime;
-  if (!me_Duration::Subtract(&TimeRemained, CurTime))
-    TimeRemained = me_Duration::Zero;
-  // Expectation: <TimeRemained> is between (<LastSnatch>, 1 ms)
+      if (CurTime_Us < EndTime_Us)
+        TimeRemained_Us = EndTime_Us - CurTime_Us;
+      else
+        TimeRemained_Us = 0;
 
-  if (TimeRemained.MicroS > LastSnatchOverhead_Us)
-    LastSnatch_Us = TimeRemained.MicroS - LastSnatchOverhead_Us;
+      if (TimeRemained_Us <= TimeReserve_Us)
+        break;
+
+      me_Delays::Delay_Us(MainDelayStep_Us);
+    }
+
+    cli();
+  }
+
+  CurTime_Us = DurationToMicros(me_RunTime::GetTime_Precise());
+
+  if (CurTime_Us < EndTime_Us)
+    TimeRemained_Us = EndTime_Us - CurTime_Us;
   else
-    LastSnatch_Us = 0;
+    TimeRemained_Us = 0;
 
-  me_Delays::Delay_Us(LastSnatch_Us);
+  if (TimeRemained_Us > FinalCorrection_Us)
+    TimeRemained_Us = TimeRemained_Us - FinalCorrection_Us;
+  else
+    TimeRemained_Us = 0;
 
-  me_FrequencyGenerator::StopFreqGen();
+  StopEmittingAfter_Us(TimeRemained_Us);
 
   SREG = OrigSreg;
 
   /*
-  Console.Write("StartTime");
-  me_DebugPrints::PrintDuration(StartTime);
+
+  me_DebugPrints::Print("Duration (us)", Duration_Us);
   Console.EndLine();
 
-  Console.Write("CurTime");
-  me_DebugPrints::PrintDuration(CurTime);
+  me_DebugPrints::Print("Current time (us)", CurTime_Us);
   Console.EndLine();
 
-  Console.Write("EndTime");
-  me_DebugPrints::PrintDuration(EndTime);
+  me_DebugPrints::Print("End time (us)", EndTime_Us);
   Console.EndLine();
 
-  Console.Write("TimeRemained");
-  me_DebugPrints::PrintDuration(TimeRemained);
-  Console.EndLine();
-
-  me_DebugPrints::Print("Last snatch (us)", LastSnatch_Us);
+  me_DebugPrints::Print("Remained time (us)", TimeRemained_Us);
   Console.EndLine();
 
   Console.EndLine();
-  */
+  //*/
 }
 
 /*
   2025-09-15
   2025-10-27
+  2025-10-28
 */
