@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-10-28
+  Last mod.: 2025-10-29
 */
 
 #include <me_ModulatedSignalPlayer.h>
@@ -54,7 +54,24 @@ static TUint_4 DurationToMicros(
   me_Duration::TDuration Duration
 )
 {
-  return 1000000 * Duration.S + 1000 * Duration.MilliS + Duration.MicroS;
+  return
+    (TUint_4) 1000000 * Duration.S +
+    (TUint_4) 1000 * Duration.MilliS +
+    (TUint_4) Duration.MicroS;
+}
+
+static me_Duration::TDuration MicrosToDuration(
+  TUint_4 NumMicros
+)
+{
+  me_Duration::TDuration Result;
+
+  Result.KiloS = 0;
+  Result.S = NumMicros / 1000000;
+  Result.MilliS = NumMicros / 1000 % 1000;
+  Result.MicroS = NumMicros % 1000;
+
+  return Result;
 }
 
 /*
@@ -67,7 +84,7 @@ void me_ModulatedSignalPlayer::Emit(
 )
 {
   const TUint_4 TimeReserve_Us = 800;
-  const TUint_2 MainDelayStep_Us = 100;
+  const TUint_2 MainDelayStep_Us = 200;
   const TUint_4 FinalCorrection_Us = 2;
 
   TUint_4 Duration_Us;
@@ -126,17 +143,28 @@ void me_ModulatedSignalPlayer::Emit(
   SREG = OrigSreg;
 
   /*
-
-  me_DebugPrints::Print("Duration (us)", Duration_Us);
+  // me_DebugPrints::Print("Duration (us)", Duration_Us);
+  // Console.EndLine();
+  Console.Write("Duration");
+  me_DebugPrints::PrintDuration(MicrosToDuration(Duration_Us));
   Console.EndLine();
 
-  me_DebugPrints::Print("Current time (us)", CurTime_Us);
+  // me_DebugPrints::Print("Current time (us)", CurTime_Us);
+  // Console.EndLine();
+  Console.Write("Current time");
+  me_DebugPrints::PrintDuration(MicrosToDuration(CurTime_Us));
   Console.EndLine();
 
-  me_DebugPrints::Print("End time (us)", EndTime_Us);
+  // me_DebugPrints::Print("End time (us)", EndTime_Us);
+  // Console.EndLine();
+  Console.Write("End time");
+  me_DebugPrints::PrintDuration(MicrosToDuration(EndTime_Us));
   Console.EndLine();
 
-  me_DebugPrints::Print("Remained time (us)", TimeRemained_Us);
+  // me_DebugPrints::Print("Remained time (us)", TimeRemained_Us);
+  // Console.EndLine();
+  Console.Write("Remained time");
+  me_DebugPrints::PrintDuration(MicrosToDuration(TimeRemained_Us));
   Console.EndLine();
 
   Console.EndLine();
