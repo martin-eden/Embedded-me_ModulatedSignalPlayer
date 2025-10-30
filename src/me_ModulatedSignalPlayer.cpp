@@ -45,35 +45,9 @@ TUint_4 Subtract(
   return A - B;
 }
 
-static TUint_4 DurationToMicros(
-  me_Duration::TDuration Duration
-)
-{
-  return
-    (TUint_4) 1000000 * Duration.S +
-    (TUint_4) 1000 * Duration.MilliS +
-    (TUint_4) Duration.MicroS;
-}
-
-//*
-static me_Duration::TDuration MicrosToDuration(
-  TUint_4 NumMicros
-)
-{
-  me_Duration::TDuration Result;
-
-  Result.KiloS = 0;
-  Result.S = NumMicros / 1000000;
-  Result.MilliS = NumMicros / 1000 % 1000;
-  Result.MicroS = NumMicros % 1000;
-
-  return Result;
-}
-//*/
-
 TUint_4 GetCurTime_Us()
 {
-  return DurationToMicros(me_RunTime::GetTime_Precise());
+  return me_Duration::DurationToMicros(me_RunTime::GetTime_Precise());
 }
 
 TUint_4 GetTimeRemained_Us(
@@ -116,7 +90,9 @@ void me_ModulatedSignalPlayer::Emit(
 
   me_FrequencyGenerator::StartFreqGen();
 
-  EndTimeMark_Us = CurTimeMark_Us + (DurationToMicros(Duration) - Overhead_Us);
+  EndTimeMark_Us =
+    CurTimeMark_Us + me_Duration::DurationToMicros(Duration) -
+    Overhead_Us;
 
   NoInterrupsMark_Us = Subtract(EndTimeMark_Us, NoInterruptsOffset_Us);
   MediumStepsMark_Us = Subtract(EndTimeMark_Us, MediumStepsOffset_Us);
@@ -133,7 +109,11 @@ void me_ModulatedSignalPlayer::Emit(
   // TimesRemained_Us[1] = GetTimeRemained_Us(CurTimeMark_Us, MediumStepsMark_Us);
 
   SREG = OrigSreg;
-  me_Delays::Delay_Duration(MicrosToDuration(GetTimeRemained_Us(CurTimeMark_Us, MediumStepsMark_Us)));
+  me_Delays::Delay_Duration(
+    me_Duration::MicrosToDuration(
+      GetTimeRemained_Us(CurTimeMark_Us, MediumStepsMark_Us)
+    )
+  );
   cli();
 
   CurTimeMark_Us = GetCurTime_Us();
@@ -167,19 +147,19 @@ ThirdStage:
   Console.Indent();
 
   Console.Write("Total");
-  me_DebugPrints::PrintDuration(MicrosToDuration(TimesRemained_Us[0]));
+  me_DebugPrints::PrintDuration(me_Duration::MicrosToDuration(TimesRemained_Us[0]));
   Console.EndLine();
 
   Console.Write("Rough delay");
-  me_DebugPrints::PrintDuration(MicrosToDuration(TimesRemained_Us[1]));
+  me_DebugPrints::PrintDuration(me_Duration::MicrosToDuration(TimesRemained_Us[1]));
   Console.EndLine();
 
   Console.Write("Medium delay");
-  me_DebugPrints::PrintDuration(MicrosToDuration(TimesRemained_Us[2]));
+  me_DebugPrints::PrintDuration(me_Duration::MicrosToDuration(TimesRemained_Us[2]));
   Console.EndLine();
 
   Console.Write("Fine delay");
-  me_DebugPrints::PrintDuration(MicrosToDuration(TimesRemained_Us[3]));
+  me_DebugPrints::PrintDuration(me_Duration::MicrosToDuration(TimesRemained_Us[3]));
   Console.EndLine();
 
   Console.Unindent();
