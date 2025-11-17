@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-10-30
+  Last mod.: 2025-11-17
 */
 
 #include <me_ModulatedSignalPlayer.h>
@@ -34,7 +34,7 @@ TBool me_ModulatedSignalPlayer::SetFrequency_Hz(
   return me_FrequencyGenerator::SetFrequency_Hz(EmitFreq_Hz);
 }
 
-TUint_4 Subtract(
+static TUint_4 Subtract(
   TUint_4 A,
   TUint_4 B
 )
@@ -45,12 +45,12 @@ TUint_4 Subtract(
   return A - B;
 }
 
-TUint_4 GetCurTime_Us()
+static TUint_4 GetCurTime_Us()
 {
   return me_Duration::DurationToMicros(me_RunTime::GetTime_Precise());
 }
 
-TUint_4 GetTimeRemained_Us(
+static TUint_4 GetTimeRemained_Us(
   TUint_4 CurTimeMark_Us,
   TUint_4 EndTimeMark_Us
 )
