@@ -2,7 +2,11 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-10-26
+  Last mod.: 2025-11-27
+*/
+
+/*
+  Emits signal at preset frequency for precise amount of time.
 */
 
 #pragma once
