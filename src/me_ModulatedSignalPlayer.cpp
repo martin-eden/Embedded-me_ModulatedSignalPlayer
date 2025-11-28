@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-11-27
+  Last mod.: 2025-11-28
 */
 
 #include <me_ModulatedSignalPlayer.h>
@@ -34,7 +34,7 @@ TBool me_ModulatedSignalPlayer::SetFrequency_Hz(
   return me_FrequencyGenerator::SetFrequency_Hz(EmitFreq_Hz);
 }
 
-static TUint_4 Subtract(
+static TUint_4 CappedSub(
   TUint_4 A,
   TUint_4 B
 )
@@ -55,7 +55,7 @@ static TUint_4 GetTimeRemained_Us(
   TUint_4 EndTimeMark_Us
 )
 {
-  return Subtract(EndTimeMark_Us, CurTimeMark_Us);
+  return CappedSub(EndTimeMark_Us, CurTimeMark_Us);
 }
 
 /*
@@ -91,7 +91,7 @@ void me_ModulatedSignalPlayer::Emit(
     CurTimeMark_Us + me_Duration::DurationToMicros(Duration) -
     Overhead_Us;
 
-  NoInterruptsMark_Us = Subtract(EndTimeMark_Us, NoInterruptsOffset_Us);
+  NoInterruptsMark_Us = CappedSub(EndTimeMark_Us, NoInterruptsOffset_Us);
 
   // TimesRemained_Us[0] = GetTimeRemained_Us(CurTimeMark_Us, EndTimeMark_Us);
 
@@ -100,7 +100,7 @@ void me_ModulatedSignalPlayer::Emit(
 
 // FirstStage:
   /*
-    Fine wait. Sub-milli-second precision. Interrupts enabled.
+    Fine wait. Interrupts enabled. Sub-milli-second precision.
   */
 
   // TimesRemained_Us[1] = GetTimeRemained_Us(CurTimeMark_Us, NoInterruptsMark_Us);
@@ -117,7 +117,7 @@ void me_ModulatedSignalPlayer::Emit(
 
 SecondStage:
   /*
-    Fine wait. Micro-second precision. Interrupts disabled.
+    Fine wait. Interrupts disabled. Micro-second precision.
   */
 
   // TimesRemained_Us[2] = GetTimeRemained_Us(CurTimeMark_Us, EndTimeMark_Us);
