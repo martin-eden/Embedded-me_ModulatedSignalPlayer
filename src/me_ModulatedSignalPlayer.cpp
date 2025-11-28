@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-11-17
+  Last mod.: 2025-11-27
 */
 
 #include <me_ModulatedSignalPlayer.h>
@@ -69,16 +69,13 @@ void me_ModulatedSignalPlayer::Emit(
 {
   const TUint_4 Overhead_Us = 47;
   // const TUint_4 Overhead_Us = 51; // for debug version
-  const TUint_4 NoInterruptsOffset_Us = 500;
-  const TUint_4 MediumStepsOffset_Us = 500 + NoInterruptsOffset_Us;
+  const TUint_4 NoInterruptsOffset_Us = 490;
 
   TUint_4 CurTimeMark_Us;
+  TUint_4 NoInterruptsMark_Us;
   TUint_4 EndTimeMark_Us;
 
-  TUint_4 MediumStepsMark_Us;
-  TUint_4 NoInterrupsMark_Us;
-
-  // TUint_4 TimesRemained_Us[4] = { 0 };
+  // TUint_4 TimesRemained_Us[3] = { 0 };
 
   TUint_1 OrigSreg;
 
@@ -94,24 +91,24 @@ void me_ModulatedSignalPlayer::Emit(
     CurTimeMark_Us + me_Duration::DurationToMicros(Duration) -
     Overhead_Us;
 
-  NoInterrupsMark_Us = Subtract(EndTimeMark_Us, NoInterruptsOffset_Us);
-  MediumStepsMark_Us = Subtract(EndTimeMark_Us, MediumStepsOffset_Us);
+  NoInterruptsMark_Us = Subtract(EndTimeMark_Us, NoInterruptsOffset_Us);
 
   // TimesRemained_Us[0] = GetTimeRemained_Us(CurTimeMark_Us, EndTimeMark_Us);
 
-  if (CurTimeMark_Us >= NoInterrupsMark_Us)
-    goto ThirdStage;
-  else if (CurTimeMark_Us >= MediumStepsMark_Us)
+  if (CurTimeMark_Us >= NoInterruptsMark_Us)
     goto SecondStage;
 
 // FirstStage:
+  /*
+    Fine wait. Sub-milli-second precision. Interrupts enabled.
+  */
 
-  // TimesRemained_Us[1] = GetTimeRemained_Us(CurTimeMark_Us, MediumStepsMark_Us);
+  // TimesRemained_Us[1] = GetTimeRemained_Us(CurTimeMark_Us, NoInterruptsMark_Us);
 
   SREG = OrigSreg;
-  me_Delays::Delay_Duration(
+  me_Delays::Delay_PreciseDuration(
     me_Duration::MicrosToDuration(
-      GetTimeRemained_Us(CurTimeMark_Us, MediumStepsMark_Us)
+      GetTimeRemained_Us(CurTimeMark_Us, NoInterruptsMark_Us)
     )
   );
   cli();
@@ -119,18 +116,11 @@ void me_ModulatedSignalPlayer::Emit(
   CurTimeMark_Us = GetCurTime_Us();
 
 SecondStage:
+  /*
+    Fine wait. Micro-second precision. Interrupts disabled.
+  */
 
-  // TimesRemained_Us[2] = GetTimeRemained_Us(CurTimeMark_Us, NoInterrupsMark_Us);
-
-  SREG = OrigSreg;
-  me_Delays::Delay_Us(GetTimeRemained_Us(CurTimeMark_Us, NoInterrupsMark_Us));
-  cli();
-
-  CurTimeMark_Us = GetCurTime_Us();
-
-ThirdStage:
-
-  // TimesRemained_Us[3] = GetTimeRemained_Us(CurTimeMark_Us, EndTimeMark_Us);
+  // TimesRemained_Us[2] = GetTimeRemained_Us(CurTimeMark_Us, EndTimeMark_Us);
 
   me_Delays::Delay_Us(GetTimeRemained_Us(CurTimeMark_Us, EndTimeMark_Us));
 
@@ -154,12 +144,8 @@ ThirdStage:
   me_DebugPrints::PrintDuration(me_Duration::MicrosToDuration(TimesRemained_Us[1]));
   Console.EndLine();
 
-  Console.Write("Medium delay");
-  me_DebugPrints::PrintDuration(me_Duration::MicrosToDuration(TimesRemained_Us[2]));
-  Console.EndLine();
-
   Console.Write("Fine delay");
-  me_DebugPrints::PrintDuration(me_Duration::MicrosToDuration(TimesRemained_Us[3]));
+  me_DebugPrints::PrintDuration(me_Duration::MicrosToDuration(TimesRemained_Us[2]));
   Console.EndLine();
 
   Console.Unindent();
@@ -173,4 +159,5 @@ ThirdStage:
   2025-10-28
   2025-10-29
   2025-10-30
+  2025-11-27
 */
