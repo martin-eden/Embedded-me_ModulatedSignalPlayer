@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-11-28
+  Last mod.: 2025-11-30
 */
 
 #include <me_ModulatedSignalPlayer.h>
@@ -47,7 +47,11 @@ static TUint_4 CappedSub(
 
 static TUint_4 GetCurTime_Us()
 {
-  return me_Duration::DurationToMicros(me_RunTime::GetTime_Precise());
+  TUint_4 Result;
+
+  me_Duration::DurationToMicros(&Result, me_RunTime::GetTime_Precise());
+
+  return Result;
 }
 
 static TUint_4 GetTimeRemained_Us(
@@ -71,6 +75,7 @@ void me_ModulatedSignalPlayer::Emit(
   // const TUint_4 Overhead_Us = 51; // for debug version
   const TUint_4 NoInterruptsOffset_Us = 490;
 
+  TUint_4 Duration_Us;
   TUint_4 CurTimeMark_Us;
   TUint_4 NoInterruptsMark_Us;
   TUint_4 EndTimeMark_Us;
@@ -78,6 +83,8 @@ void me_ModulatedSignalPlayer::Emit(
   // TUint_4 TimesRemained_Us[3] = { 0 };
 
   TUint_1 OrigSreg;
+
+  me_Duration::DurationToMicros(&Duration_Us, Duration);
 
   OrigSreg = SREG;
 
@@ -87,9 +94,7 @@ void me_ModulatedSignalPlayer::Emit(
 
   me_FrequencyGenerator::StartFreqGen();
 
-  EndTimeMark_Us =
-    CurTimeMark_Us + me_Duration::DurationToMicros(Duration) -
-    Overhead_Us;
+  EndTimeMark_Us = CurTimeMark_Us + Duration_Us - Overhead_Us;
 
   NoInterruptsMark_Us = CappedSub(EndTimeMark_Us, NoInterruptsOffset_Us);
 
@@ -106,11 +111,11 @@ void me_ModulatedSignalPlayer::Emit(
   // TimesRemained_Us[1] = GetTimeRemained_Us(CurTimeMark_Us, NoInterruptsMark_Us);
 
   SREG = OrigSreg;
-  me_Delays::Delay_PreciseDuration(
-    me_Duration::MicrosToDuration(
-      GetTimeRemained_Us(CurTimeMark_Us, NoInterruptsMark_Us)
-    )
+  me_Duration::MicrosToDuration(
+    &Duration,
+    GetTimeRemained_Us(CurTimeMark_Us, NoInterruptsMark_Us)
   );
+  me_Delays::Delay_PreciseDuration(Duration);
   cli();
 
   CurTimeMark_Us = GetCurTime_Us();
