@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-11-30
+  Last mod.: 2025-12-01
 */
 
 #include <me_ModulatedSignalPlayer.h>
@@ -17,8 +17,8 @@
 #include <avr/common.h>
 #include <avr/interrupt.h>
 
-// #include <me_Console.h>
-// #include <me_DebugPrints.h>
+#include <me_Console.h>
+#include <me_DebugPrints.h>
 
 using namespace me_ModulatedSignalPlayer;
 
@@ -71,9 +71,19 @@ void me_ModulatedSignalPlayer::Emit(
   me_Duration::TDuration Duration
 )
 {
+  /*
+    Worst case is when we called with short (say 100 us) duration
+
+    For short durations we disable interrupts and call microseconds
+    delay. That's called "stage 2" here.
+
+    For longer durations we set "stage 2" time mark and chill with
+    some delay function and interrupts.
+  */
+
   const TUint_4 Overhead_Us = 47;
   // const TUint_4 Overhead_Us = 51; // for debug version
-  const TUint_4 NoInterruptsOffset_Us = 490;
+  const TUint_4 NoInterruptsOffset_Us = 1500;
 
   TUint_4 Duration_Us;
   TUint_4 CurTimeMark_Us;
@@ -105,7 +115,7 @@ void me_ModulatedSignalPlayer::Emit(
 
 // FirstStage:
   /*
-    Fine wait. Interrupts enabled. Sub-milli-second precision.
+    Rough wait. Interrupts enabled.
   */
 
   // TimesRemained_Us[1] = GetTimeRemained_Us(CurTimeMark_Us, NoInterruptsMark_Us);
@@ -134,23 +144,23 @@ SecondStage:
   SREG = OrigSreg;
 
   /*
-  Console.Write("Duration");
-  me_DebugPrints::PrintDuration(Duration);
-  Console.EndLine();
-
   Console.Print("Durations");
   Console.Indent();
 
   Console.Write("Total");
-  me_DebugPrints::PrintDuration(me_Duration::MicrosToDuration(TimesRemained_Us[0]));
+  me_Duration::MicrosToDuration(&Duration, TimesRemained_Us[0]);
+  me_DebugPrints::PrintDuration(Duration);
   Console.EndLine();
 
   Console.Write("Rough delay");
-  me_DebugPrints::PrintDuration(me_Duration::MicrosToDuration(TimesRemained_Us[1]));
+  me_Duration::MicrosToDuration(&Duration, TimesRemained_Us[1]);
+  me_DebugPrints::PrintDuration(Duration);
   Console.EndLine();
 
   Console.Write("Fine delay");
-  me_DebugPrints::PrintDuration(me_Duration::MicrosToDuration(TimesRemained_Us[2]));
+  me_Duration::MicrosToDuration(&Duration, TimesRemained_Us[2]);
+  me_DebugPrints::PrintDuration(Duration);
+  Console.Print(TimesRemained_Us[2]);
   Console.EndLine();
 
   Console.Unindent();
