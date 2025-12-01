@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-10-30
+  Last mod.: 2025-12-01
 */
 
 #include <me_ModulatedSignalPlayer.h>
@@ -13,8 +13,26 @@
 #include <me_Duration.h>
 #include <me_Menu.h>
 
-static TUint_4 EmitFreq_Hz = 1000000;
-static me_Duration::TDuration EmitDuration = { 0, 0, 0, 300 };
+static TUint_2 EmitFreq_kHz = 40;
+static me_Duration::TDuration EmitDuration = { 0, 0, 0, 550 };
+
+void SetFrequency_kHz(
+  TUint_2 Freq_kHz
+)
+{
+  TUint_4 EmitFreq_Hz;
+
+  EmitFreq_Hz = (TUint_4) Freq_kHz * 1000;
+
+  if (!me_ModulatedSignalPlayer::SetFrequency_Hz(EmitFreq_Hz))
+  {
+    Console.Print("Setting frequency failed");
+
+    return;
+  }
+
+  EmitFreq_kHz = Freq_kHz;
+}
 
 void SetFrequency_Handler(
   TAddress Data [[gnu::unused]],
@@ -32,7 +50,7 @@ void SetFrequency_Handler(
     return;
   }
 
-  EmitFreq_Hz = (TUint_4) Freq_kHz * 1000;
+  SetFrequency_kHz(Freq_kHz);
 }
 
 void GetFrequency_Handler(
@@ -40,7 +58,7 @@ void GetFrequency_Handler(
   TAddress Instance [[gnu::unused]]
 )
 {
-  me_DebugPrints::Print("Frequency (Hz)", EmitFreq_Hz);
+  me_DebugPrints::Print("Frequency (kHz)", EmitFreq_kHz);
   Console.EndLine();
 }
 
@@ -86,13 +104,6 @@ void Emit_Handler(
   TAddress Instance [[gnu::unused]]
 )
 {
-  if (!me_ModulatedSignalPlayer::SetFrequency_Hz(EmitFreq_Hz))
-  {
-    Console.Print("Setting frequency failed");
-
-    return;
-  }
-
   me_ModulatedSignalPlayer::Emit(EmitDuration);
 }
 
@@ -118,7 +129,9 @@ void setup()
   me_Menu::TMenu Menu;
 
   Console.Init();
+
   me_ModulatedSignalPlayer::Init();
+  SetFrequency_kHz(EmitFreq_kHz);
 
   AddMenuItems(&Menu);
   Menu.AddBuiltinCommands();
@@ -137,4 +150,5 @@ void loop()
   2025-09-15
   2025-09-19
   2025-10-26
+  2025-12-01
 */
