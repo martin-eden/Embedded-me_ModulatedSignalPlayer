@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-12-01
+  Last mod.: 2025-12-10
 */
 
 #include <me_ModulatedSignalPlayer.h>
@@ -21,11 +21,6 @@
 #include <me_DebugPrints.h>
 
 using namespace me_ModulatedSignalPlayer;
-
-void me_ModulatedSignalPlayer::Init()
-{
-  me_Delays::Init();
-}
 
 TBool me_ModulatedSignalPlayer::SetFrequency_Hz(
   TUint_4 EmitFreq_Hz
@@ -125,7 +120,7 @@ void me_ModulatedSignalPlayer::Emit(
     &Duration,
     GetTimeRemained_Us(CurTimeMark_Us, NoInterruptsMark_Us)
   );
-  me_Delays::Delay_PreciseDuration(Duration);
+  me_Delays::Delay_Duration(Duration);
   cli();
 
   CurTimeMark_Us = GetCurTime_Us();

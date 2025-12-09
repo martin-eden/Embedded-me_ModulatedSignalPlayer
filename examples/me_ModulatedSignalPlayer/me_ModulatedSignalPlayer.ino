@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-12-01
+  Last mod: 2025-12-10
 */
 
 #include <me_ModulatedSignalPlayer.h>
@@ -130,7 +130,6 @@ void setup()
 
   Console.Init();
 
-  me_ModulatedSignalPlayer::Init();
   SetFrequency_kHz(EmitFreq_kHz);
 
   AddMenuItems(&Menu);
