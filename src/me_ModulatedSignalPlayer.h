@@ -16,6 +16,7 @@
 
 namespace me_ModulatedSignalPlayer
 {
+  void Init();
   TBool SetFrequency_Hz(TUint_4 EmitFreq_Hz);
   void Emit(me_Duration::TDuration Duration);
 }

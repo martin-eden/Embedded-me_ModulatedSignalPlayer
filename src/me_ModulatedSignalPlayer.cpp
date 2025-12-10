@@ -22,6 +22,12 @@
 
 using namespace me_ModulatedSignalPlayer;
 
+void me_ModulatedSignalPlayer::Init()
+{
+  me_RunTime::Init();
+  me_RunTime::Start();
+}
+
 TBool me_ModulatedSignalPlayer::SetFrequency_Hz(
   TUint_4 EmitFreq_Hz
 )
