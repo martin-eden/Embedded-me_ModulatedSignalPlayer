@@ -84,7 +84,7 @@ void me_ModulatedSignalPlayer::Emit(
 
   const TUint_4 Overhead_Us = 47;
   // const TUint_4 Overhead_Us = 51; // for debug version
-  const TUint_4 NoInterruptsOffset_Us = 1500;
+  const TUint_4 NoInterruptsOffset_Us = 1000;
 
   TUint_4 Duration_Us;
   TUint_4 CurTimeMark_Us;
