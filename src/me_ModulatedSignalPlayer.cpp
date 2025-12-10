@@ -50,7 +50,7 @@ static TUint_4 GetCurTime_Us()
 {
   TUint_4 Result;
 
-  me_Duration::DurationToMicros(&Result, me_RunTime::GetTime_Precise());
+  me_Duration::DurationToMicros(&Result, me_RunTime::GetTime());
 
   return Result;
 }
