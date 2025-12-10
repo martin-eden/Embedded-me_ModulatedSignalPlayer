@@ -130,6 +130,7 @@ void setup()
 
   Console.Init();
 
+  me_ModulatedSignalPlayer::Init();
   SetFrequency_kHz(EmitFreq_kHz);
 
   AddMenuItems(&Menu);
