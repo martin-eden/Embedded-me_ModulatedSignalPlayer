@@ -59,8 +59,8 @@ static TUint_4 GetTimeRemained_Us(
 
   This code is tuned to compensate overhead of function calls.
 */
-void me_ModulatedSignalPlayer::Emit(
-  me_Duration::TDuration Duration
+void me_ModulatedSignalPlayer::Emit_Us(
+  TUint_4 Duration_Us
 )
 {
   /*
@@ -77,7 +77,6 @@ void me_ModulatedSignalPlayer::Emit(
   // const TUint_4 Overhead_Us = 51; // for debug version
   const TUint_4 NoInterruptsOffset_Us = 1000;
 
-  TUint_4 Duration_Us;
   TUint_4 CurTimeMark_Us;
   TUint_4 NoInterruptsMark_Us;
   TUint_4 EndTimeMark_Us;
@@ -85,9 +84,6 @@ void me_ModulatedSignalPlayer::Emit(
   // TUint_4 TimesRemained_Us[3] = { 0 };
 
   TUint_1 OrigSreg;
-
-  if (!me_Duration::MicrosFromDuration(&Duration_Us, Duration))
-    return;
 
   OrigSreg = SREG;
 
@@ -114,11 +110,7 @@ void me_ModulatedSignalPlayer::Emit(
   // TimesRemained_Us[1] = GetTimeRemained_Us(CurTimeMark_Us, NoInterruptsMark_Us);
 
   SREG = OrigSreg;
-  me_Duration::DurationFromMicros(
-    &Duration,
-    GetTimeRemained_Us(CurTimeMark_Us, NoInterruptsMark_Us)
-  );
-  me_Delays::Delay_Duration(Duration);
+  me_Delays::Delay_Us(GetTimeRemained_Us(CurTimeMark_Us, NoInterruptsMark_Us));
   cli();
 
   CurTimeMark_Us = me_RunTime::GetTime_Us();

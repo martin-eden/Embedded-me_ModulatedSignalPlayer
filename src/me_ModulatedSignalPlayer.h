@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-12-10
+  Last mod.: 2025-12-27
 */
 
 /*
@@ -12,15 +12,15 @@
 #pragma once
 
 #include <me_BaseTypes.h>
-#include <me_Duration.h>
 
 namespace me_ModulatedSignalPlayer
 {
   void Init();
-  TBool SetFrequency_Hz(TUint_4 EmitFreq_Hz);
-  void Emit(me_Duration::TDuration Duration);
+  TBool SetFrequency_Hz(TUint_4);
+  void Emit_Us(TUint_4);
 }
 
 /*
   2025-09-15
+  2025-12-27
 */

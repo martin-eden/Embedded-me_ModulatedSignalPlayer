@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod: 2025-12-10
+  Last mod: 2025-12-27
 */
 
 #include <me_ModulatedSignalPlayer.h>
@@ -10,11 +10,10 @@
 #include <me_BaseTypes.h>
 #include <me_Console.h>
 #include <me_DebugPrints.h>
-#include <me_Duration.h>
 #include <me_Menu.h>
 
 static TUint_2 EmitFreq_kHz = 40;
-static me_Duration::TDuration EmitDuration = { 0, 0, 0, 550 };
+static TUint_4 EmitDuration_Us = 550;
 
 void SetFrequency_kHz(
   TUint_2 Freq_kHz
@@ -68,7 +67,6 @@ void SetDuration_Handler(
 )
 {
   TUint_2 Duration_Us;
-  TUint_2 Duration_Ms;
 
   Console.Write("Enter duration (in microseconds): ");
 
@@ -79,14 +77,7 @@ void SetDuration_Handler(
     return;
   }
 
-  Duration_Ms = Duration_Us / 1000;
-
-  Duration_Us = Duration_Us % 1000;
-
-  EmitDuration.KiloS = 0;
-  EmitDuration.S = 0;
-  EmitDuration.MilliS = Duration_Ms;
-  EmitDuration.MicroS = Duration_Us;
+  EmitDuration_Us = Duration_Us;
 }
 
 void GetDuration_Handler(
@@ -94,7 +85,7 @@ void GetDuration_Handler(
   TAddress Instance [[gnu::unused]]
 )
 {
-  me_DebugPrints::PrintDuration("Duration", EmitDuration);
+  me_DebugPrints::Print("Duration (us)", EmitDuration_Us);
   Console.EndLine();
 }
 
@@ -103,7 +94,7 @@ void Emit_Handler(
   TAddress Instance [[gnu::unused]]
 )
 {
-  me_ModulatedSignalPlayer::Emit(EmitDuration);
+  me_ModulatedSignalPlayer::Emit_Us(EmitDuration_Us);
 }
 
 void AddMenuItems(
