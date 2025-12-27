@@ -94,8 +94,7 @@ void GetDuration_Handler(
   TAddress Instance [[gnu::unused]]
 )
 {
-  Console.Write("Duration");
-  me_DebugPrints::PrintDuration(EmitDuration);
+  me_DebugPrints::PrintDuration("Duration", EmitDuration);
   Console.EndLine();
 }
 

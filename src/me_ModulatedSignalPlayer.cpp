@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-12-10
+  Last mod.: 2025-12-27
 */
 
 #include <me_ModulatedSignalPlayer.h>
@@ -46,15 +46,6 @@ static TUint_4 CappedSub(
   return A - B;
 }
 
-static TUint_4 GetCurTime_Us()
-{
-  TUint_4 Result;
-
-  me_Duration::DurationToMicros(&Result, me_RunTime::GetTime());
-
-  return Result;
-}
-
 static TUint_4 GetTimeRemained_Us(
   TUint_4 CurTimeMark_Us,
   TUint_4 EndTimeMark_Us
@@ -95,13 +86,14 @@ void me_ModulatedSignalPlayer::Emit(
 
   TUint_1 OrigSreg;
 
-  me_Duration::DurationToMicros(&Duration_Us, Duration);
+  if (!me_Duration::MicrosFromDuration(&Duration_Us, Duration))
+    return;
 
   OrigSreg = SREG;
 
   cli();
 
-  CurTimeMark_Us = GetCurTime_Us();
+  CurTimeMark_Us = me_RunTime::GetTime_Us();
 
   me_FrequencyGenerator::StartFreqGen();
 
@@ -122,14 +114,14 @@ void me_ModulatedSignalPlayer::Emit(
   // TimesRemained_Us[1] = GetTimeRemained_Us(CurTimeMark_Us, NoInterruptsMark_Us);
 
   SREG = OrigSreg;
-  me_Duration::MicrosToDuration(
+  me_Duration::DurationFromMicros(
     &Duration,
     GetTimeRemained_Us(CurTimeMark_Us, NoInterruptsMark_Us)
   );
   me_Delays::Delay_Duration(Duration);
   cli();
 
-  CurTimeMark_Us = GetCurTime_Us();
+  CurTimeMark_Us = me_RunTime::GetTime_Us();
 
 SecondStage:
   /*
@@ -148,19 +140,16 @@ SecondStage:
   Console.Print("Durations");
   Console.Indent();
 
-  Console.Write("Total");
-  me_Duration::MicrosToDuration(&Duration, TimesRemained_Us[0]);
-  me_DebugPrints::PrintDuration(Duration);
+  me_Duration::DurationFromMicros(&Duration, TimesRemained_Us[0]);
+  me_DebugPrints::PrintDuration("Total", Duration);
   Console.EndLine();
 
-  Console.Write("Rough delay");
-  me_Duration::MicrosToDuration(&Duration, TimesRemained_Us[1]);
-  me_DebugPrints::PrintDuration(Duration);
+  me_Duration::DurationFromMicros(&Duration, TimesRemained_Us[1]);
+  me_DebugPrints::PrintDuration("Rough delay", Duration);
   Console.EndLine();
 
-  Console.Write("Fine delay");
-  me_Duration::MicrosToDuration(&Duration, TimesRemained_Us[2]);
-  me_DebugPrints::PrintDuration(Duration);
+  me_Duration::DurationFromMicros(&Duration, TimesRemained_Us[2]);
+  me_DebugPrints::PrintDuration("Fine delay", Duration);
   Console.Print(TimesRemained_Us[2]);
   Console.EndLine();
 
