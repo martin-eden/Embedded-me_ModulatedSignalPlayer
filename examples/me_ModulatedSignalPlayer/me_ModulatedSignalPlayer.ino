@@ -13,7 +13,7 @@
 #include <me_Menu.h>
 
 static TUint_2 EmitFreq_kHz = 40;
-static TUint_4 EmitDuration_Us = 550;
+static TUint_4 EmitDuration_Us = 600;
 
 void SetFrequency_kHz(
   TUint_2 Freq_kHz

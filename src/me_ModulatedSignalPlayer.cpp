@@ -2,14 +2,13 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-12-27
+  Last mod.: 2025-12-28
 */
 
 #include <me_ModulatedSignalPlayer.h>
 
 #include <me_BaseTypes.h>
 
-#include <me_Duration.h>
 #include <me_FrequencyGenerator.h>
 #include <me_Delays.h>
 #include <me_RunTime.h>
@@ -17,8 +16,8 @@
 #include <avr/common.h>
 #include <avr/interrupt.h>
 
-#include <me_Console.h>
-#include <me_DebugPrints.h>
+// #include <me_Console.h>
+// #include <me_DebugPrints.h>
 
 using namespace me_ModulatedSignalPlayer;
 
@@ -73,9 +72,9 @@ void me_ModulatedSignalPlayer::Emit_Us(
     some delay function and interrupts.
   */
 
-  const TUint_4 Overhead_Us = 47;
-  // const TUint_4 Overhead_Us = 51; // for debug version
-  const TUint_4 NoInterruptsOffset_Us = 1000;
+  const TUint_4 Overhead_Us = 40;
+  // const TUint_4 Overhead_Us = 43; // for debug version
+  const TUint_4 NoInterruptsOffset_Us = 150;
 
   TUint_4 CurTimeMark_Us;
   TUint_4 NoInterruptsMark_Us;
@@ -132,17 +131,13 @@ SecondStage:
   Console.Print("Durations");
   Console.Indent();
 
-  me_Duration::DurationFromMicros(&Duration, TimesRemained_Us[0]);
-  me_DebugPrints::PrintDuration("Total", Duration);
+  me_DebugPrints::PrintDuration_Us("Total", TimesRemained_Us[0]);
   Console.EndLine();
 
-  me_Duration::DurationFromMicros(&Duration, TimesRemained_Us[1]);
-  me_DebugPrints::PrintDuration("Rough delay", Duration);
+  me_DebugPrints::PrintDuration_Us("Rough delay", TimesRemained_Us[1]);
   Console.EndLine();
 
-  me_Duration::DurationFromMicros(&Duration, TimesRemained_Us[2]);
-  me_DebugPrints::PrintDuration("Fine delay", Duration);
-  Console.Print(TimesRemained_Us[2]);
+  me_DebugPrints::PrintDuration_Us("Fine delay", TimesRemained_Us[2]);
   Console.EndLine();
 
   Console.Unindent();
