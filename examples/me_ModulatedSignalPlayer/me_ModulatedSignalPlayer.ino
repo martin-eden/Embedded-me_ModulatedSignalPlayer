@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod: 2025-12-27
+  Last mod: 2026-02-13
 */
 
 #include <me_ModulatedSignalPlayer.h>
@@ -106,7 +106,7 @@ void AddMenuItems(
 
   const TAddress Unused = 0;
 
-  Menu->AddItem(ToItem("sf", "Set frequency (Hz)", SetFrequency_Handler, Unused));
+  Menu->AddItem(ToItem("sf", "Set frequency (kHz)", SetFrequency_Handler, Unused));
   Menu->AddItem(ToItem("gf", "Get frequency", GetFrequency_Handler, Unused));
   Menu->AddItem(ToItem("sd", "Set duration (in microseconds)", SetDuration_Handler, Unused));
   Menu->AddItem(ToItem("gd", "Get duration", GetDuration_Handler, Unused));
