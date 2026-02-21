@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod.: 2025-12-28
+  Last mod.: 2026-02-21
 */
 
 #include <me_ModulatedSignalPlayer.h>
@@ -12,9 +12,7 @@
 #include <me_FrequencyGenerator.h>
 #include <me_Delays.h>
 #include <me_RunTime.h>
-
-#include <avr/common.h>
-#include <avr/interrupt.h>
+#include <me_Interrupts.h>
 
 // #include <me_Console.h>
 // #include <me_DebugPrints.h>
@@ -82,50 +80,46 @@ void me_ModulatedSignalPlayer::Emit_Us(
 
   // TUint_4 TimesRemained_Us[3] = { 0 };
 
-  TUint_1 OrigSreg;
+  {
+    me_Interrupts::TInterruptsDisabler NoInts;
 
-  OrigSreg = SREG;
+    CurTimeMark_Us = me_RunTime::GetTime_Us();
 
-  cli();
+    me_FrequencyGenerator::StartFreqGen();
 
-  CurTimeMark_Us = me_RunTime::GetTime_Us();
+    EndTimeMark_Us = CurTimeMark_Us + Duration_Us - Overhead_Us;
 
-  me_FrequencyGenerator::StartFreqGen();
+    NoInterruptsMark_Us = CappedSub(EndTimeMark_Us, NoInterruptsOffset_Us);
 
-  EndTimeMark_Us = CurTimeMark_Us + Duration_Us - Overhead_Us;
+    // TimesRemained_Us[0] = GetTimeRemained_Us(CurTimeMark_Us, EndTimeMark_Us);
 
-  NoInterruptsMark_Us = CappedSub(EndTimeMark_Us, NoInterruptsOffset_Us);
+    if (CurTimeMark_Us >= NoInterruptsMark_Us)
+      goto SecondStage;
 
-  // TimesRemained_Us[0] = GetTimeRemained_Us(CurTimeMark_Us, EndTimeMark_Us);
+  // FirstStage:
+    /*
+      Rough wait. Interrupts enabled.
+    */
 
-  if (CurTimeMark_Us >= NoInterruptsMark_Us)
-    goto SecondStage;
+    // TimesRemained_Us[1] = GetTimeRemained_Us(CurTimeMark_Us, NoInterruptsMark_Us);
 
-// FirstStage:
-  /*
-    Rough wait. Interrupts enabled.
-  */
+    NoInts.Restore();
+    me_Delays::Delay_Us(GetTimeRemained_Us(CurTimeMark_Us, NoInterruptsMark_Us));
+    NoInts.Disable();
 
-  // TimesRemained_Us[1] = GetTimeRemained_Us(CurTimeMark_Us, NoInterruptsMark_Us);
+    CurTimeMark_Us = me_RunTime::GetTime_Us();
 
-  SREG = OrigSreg;
-  me_Delays::Delay_Us(GetTimeRemained_Us(CurTimeMark_Us, NoInterruptsMark_Us));
-  cli();
+  SecondStage:
+    /*
+      Fine wait. Interrupts disabled. Micro-second precision.
+    */
 
-  CurTimeMark_Us = me_RunTime::GetTime_Us();
+    // TimesRemained_Us[2] = GetTimeRemained_Us(CurTimeMark_Us, EndTimeMark_Us);
 
-SecondStage:
-  /*
-    Fine wait. Interrupts disabled. Micro-second precision.
-  */
+    me_Delays::Delay_Us(GetTimeRemained_Us(CurTimeMark_Us, EndTimeMark_Us));
 
-  // TimesRemained_Us[2] = GetTimeRemained_Us(CurTimeMark_Us, EndTimeMark_Us);
-
-  me_Delays::Delay_Us(GetTimeRemained_Us(CurTimeMark_Us, EndTimeMark_Us));
-
-  me_FrequencyGenerator::StopFreqGen();
-
-  SREG = OrigSreg;
+    me_FrequencyGenerator::StopFreqGen();
+  }
 
   /*
   Console.Print("Durations");
@@ -146,10 +140,5 @@ SecondStage:
 }
 
 /*
-  2025-09-15
-  2025-10-27
-  2025-10-28
-  2025-10-29
-  2025-10-30
-  2025-11-27
+  2025 # # # # # #
 */
