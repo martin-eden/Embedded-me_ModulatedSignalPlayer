@@ -2,7 +2,7 @@
 
 /*
   Author: Martin Eden
-  Last mod: 2026-02-13
+  Last mod: 2026-04-13
 */
 
 #include <me_ModulatedSignalPlayer.h>
@@ -34,7 +34,6 @@ void SetFrequency_kHz(
 }
 
 void SetFrequency_Handler(
-  TAddress Data [[gnu::unused]],
   TAddress Instance [[gnu::unused]]
 )
 {
@@ -53,7 +52,6 @@ void SetFrequency_Handler(
 }
 
 void GetFrequency_Handler(
-  TAddress Data [[gnu::unused]],
   TAddress Instance [[gnu::unused]]
 )
 {
@@ -62,7 +60,6 @@ void GetFrequency_Handler(
 }
 
 void SetDuration_Handler(
-  TAddress Data [[gnu::unused]],
   TAddress Instance [[gnu::unused]]
 )
 {
@@ -81,7 +78,6 @@ void SetDuration_Handler(
 }
 
 void GetDuration_Handler(
-  TAddress Data [[gnu::unused]],
   TAddress Instance [[gnu::unused]]
 )
 {
@@ -90,7 +86,6 @@ void GetDuration_Handler(
 }
 
 void Emit_Handler(
-  TAddress Data [[gnu::unused]],
   TAddress Instance [[gnu::unused]]
 )
 {
